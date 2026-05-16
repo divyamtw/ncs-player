@@ -2,6 +2,28 @@ import Song from "../models/song.model.js";
 import { v4 as uuidv4 } from "uuid";
 
 /**
+ * GET /api/songs/stats
+ * Returns global aggregate counts: total, adminCount, popularCount.
+ */
+export const getSongStats = async (req, res) => {
+  try {
+    const [total, adminCount, popularCount] = await Promise.all([
+      Song.countDocuments({}),
+      Song.countDocuments({ source: "Admin" }),
+      Song.countDocuments({ isPopular: true }),
+    ]);
+    return res
+      .status(200)
+      .json({ success: true, total, adminCount, popularCount });
+  } catch (error) {
+    console.error(error);
+    return res
+      .status(500)
+      .json({ success: false, message: "Failed to fetch stats" });
+  }
+};
+
+/**
  * GET /api/songs
  * Fetch all songs with optional pagination, search, and filter.
  */
@@ -44,7 +66,9 @@ export const getAllSongs = async (req, res) => {
     });
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ success: false, message: "Failed to fetch songs" });
+    return res
+      .status(500)
+      .json({ success: false, message: "Failed to fetch songs" });
   }
 };
 
@@ -54,14 +78,21 @@ export const getAllSongs = async (req, res) => {
  */
 export const getSongById = async (req, res) => {
   try {
-    const song = await Song.findById(req.params.id).populate("addedBy", "username email");
+    const song = await Song.findById(req.params.id).populate(
+      "addedBy",
+      "username email",
+    );
     if (!song) {
-      return res.status(404).json({ success: false, message: "Song not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "Song not found" });
     }
     return res.status(200).json({ success: true, data: song });
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ success: false, message: "Failed to fetch song" });
+    return res
+      .status(500)
+      .json({ success: false, message: "Failed to fetch song" });
   }
 };
 
@@ -104,9 +135,16 @@ export const createSong = async (req, res) => {
   } catch (error) {
     console.error(error);
     if (error.code === 11000) {
-      return res.status(409).json({ success: false, message: "Song with this trackId already exists" });
+      return res
+        .status(409)
+        .json({
+          success: false,
+          message: "Song with this trackId already exists",
+        });
     }
-    return res.status(500).json({ success: false, message: "Failed to create song" });
+    return res
+      .status(500)
+      .json({ success: false, message: "Failed to create song" });
   }
 };
 
@@ -129,11 +167,13 @@ export const updateSong = async (req, res) => {
         ...(duration !== undefined && { duration }),
         ...(isPopular !== undefined && { isPopular }),
       },
-      { new: true, runValidators: true }
+      { new: true, runValidators: true },
     );
 
     if (!song) {
-      return res.status(404).json({ success: false, message: "Song not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "Song not found" });
     }
 
     return res.status(200).json({
@@ -143,7 +183,9 @@ export const updateSong = async (req, res) => {
     });
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ success: false, message: "Failed to update song" });
+    return res
+      .status(500)
+      .json({ success: false, message: "Failed to update song" });
   }
 };
 
@@ -155,12 +197,18 @@ export const deleteSong = async (req, res) => {
   try {
     const song = await Song.findByIdAndDelete(req.params.id);
     if (!song) {
-      return res.status(404).json({ success: false, message: "Song not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "Song not found" });
     }
-    return res.status(200).json({ success: true, message: "Song deleted successfully" });
+    return res
+      .status(200)
+      .json({ success: true, message: "Song deleted successfully" });
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ success: false, message: "Failed to delete song" });
+    return res
+      .status(500)
+      .json({ success: false, message: "Failed to delete song" });
   }
 };
 
@@ -172,7 +220,9 @@ export const togglePopular = async (req, res) => {
   try {
     const song = await Song.findById(req.params.id);
     if (!song) {
-      return res.status(404).json({ success: false, message: "Song not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "Song not found" });
     }
 
     song.isPopular = !song.isPopular;
@@ -185,6 +235,8 @@ export const togglePopular = async (req, res) => {
     });
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ success: false, message: "Failed to toggle popular status" });
+    return res
+      .status(500)
+      .json({ success: false, message: "Failed to toggle popular status" });
   }
 };

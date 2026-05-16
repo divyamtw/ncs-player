@@ -12,6 +12,7 @@ const SOURCES = ['All', 'Admin', 'NCS'];
 export default function SongsPage() {
   const [songs, setSongs] = useState([]);
   const [pagination, setPagination] = useState({ total: 0, page: 1, limit: 10, totalPages: 1 });
+  const [stats, setStats] = useState({ total: 0, adminCount: 0, popularCount: 0 });
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [genre, setGenre] = useState('All');
@@ -21,6 +22,15 @@ export default function SongsPage() {
   const [modalOpen, setModalOpen] = useState(false);
   const [editSong, setEditSong] = useState(null);
   const [deleteTarget, setDeleteTarget] = useState(null);
+
+  const fetchStats = useCallback(async () => {
+    try {
+      const res = await songsApi.getStats();
+      setStats(res.data);
+    } catch {
+      // silently ignore
+    }
+  }, []);
 
   const fetchSongs = useCallback(async (page = 1) => {
     setLoading(true);
@@ -43,6 +53,7 @@ export default function SongsPage() {
     }
   }, [search, genre, source, tab]);
 
+  useEffect(() => { fetchStats(); }, [fetchStats]);
   useEffect(() => { fetchSongs(1); }, [fetchSongs]);
 
   const handleCreate = () => { setEditSong(null); setModalOpen(true); };
@@ -52,6 +63,7 @@ export default function SongsPage() {
   const handleModalSuccess = () => {
     setModalOpen(false);
     fetchSongs(pagination.page);
+    fetchStats();
   };
 
   const handleDeleteConfirm = async () => {
@@ -60,6 +72,7 @@ export default function SongsPage() {
       toast.success('Song deleted');
       setDeleteTarget(null);
       fetchSongs(pagination.page);
+      fetchStats();
     } catch {
       toast.error('Failed to delete song');
     }
@@ -70,6 +83,7 @@ export default function SongsPage() {
       await songsApi.togglePopular(song._id);
       toast.success(`Marked as ${song.isPopular ? 'not popular' : 'popular'}`);
       fetchSongs(pagination.page);
+      fetchStats();
     } catch {
       toast.error('Failed to update');
     }
@@ -77,17 +91,17 @@ export default function SongsPage() {
 
   const statsCards = [
     {
-      label: 'Total Songs', value: pagination.total || 0,
+      label: 'Total Songs', value: stats.total,
       color: 'var(--primary)', bg: 'var(--primary-bg)',
       icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>,
     },
     {
-      label: 'Admin Added', value: songs.filter(s => s.source === 'Admin').length || '—',
+      label: 'Admin Added', value: stats.adminCount,
       color: 'var(--success)', bg: 'var(--success-bg)',
       icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>,
     },
     {
-      label: 'Popular Tracks', value: songs.filter(s => s.isPopular).length || '—',
+      label: 'Popular Tracks', value: stats.popularCount,
       color: 'var(--amber)', bg: 'var(--amber-bg)',
       icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>,
     },

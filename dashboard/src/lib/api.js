@@ -13,6 +13,7 @@ export const authApi = {
 };
 
 export const songsApi = {
+  getStats: () => API.get("/api/songs/stats"),
   getAll: (params) => API.get("/api/songs", { params }),
   getById: (id) => API.get(`/api/songs/${id}`),
   create: (data) => API.post("/api/songs", data),

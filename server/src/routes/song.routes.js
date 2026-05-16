@@ -2,6 +2,7 @@ import express from "express";
 import {
   getAllSongs,
   getSongById,
+  getSongStats,
   createSong,
   updateSong,
   deleteSong,
@@ -10,6 +11,9 @@ import {
 import verifyUser from "../middlewares/auth.middleware.js";
 
 const router = express.Router();
+
+// Stats — must be before /:id
+router.get("/stats", getSongStats);
 
 // Public routes — anyone can read songs
 router.get("/", getAllSongs);
