@@ -8,8 +8,12 @@ const app = express();
 
 app.use(
   cors({
-    origin: config.CLIENT_URL,
-    methods: ["GET", "POST", "PUT", "DELETE"],
+    origin: [
+      config.CLIENT_URL,
+      "http://localhost:5173",
+      "http://localhost:5174",
+    ].filter(Boolean),
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
     credentials: true,
   }),
 );
@@ -25,8 +29,10 @@ app.get("/", (req, res) => {
 
 //import routes
 import AuthRoutes from "./routes/auth.routes.js";
+import SongRoutes from "./routes/song.routes.js";
 
 //routes
 app.use("/api/auth", AuthRoutes);
+app.use("/api/songs", SongRoutes);
 
 export default app;

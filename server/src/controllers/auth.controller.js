@@ -14,10 +14,8 @@ const sendTokenRes = (user, res, msg) => {
     message: msg,
     user: {
       id: user._id,
+      username: user.username,
       email: user.email,
-      contact: user.contact,
-      fullname: user.fullname,
-      role: user.role,
     },
   });
 };
@@ -27,25 +25,18 @@ const sendTokenRes = (user, res, msg) => {
  * Checks for existing accounts before creating a new user and generating an access token.
  */
 const registerController = async (req, res) => {
-  const { firstname, lastname, email, password, contact, isSeller } = req.body;
+  const { username, email, password } = req.body;
 
   try {
-    const existingUser = await User.findOne({ $or: [{ email }, { contact }] });
+    const existingUser = await User.findOne({ email });
     if (existingUser) {
       return res.status(400).json({
         success: false,
-        message: "User with email or contact already exists",
+        message: "User with this email already exists",
       });
     }
 
-    const user = await User.create({
-      firstname,
-      lastname,
-      email,
-      password,
-      contact,
-      role: isSeller ? "seller" : "buyer",
-    });
+    const user = await User.create({ username, email, password });
 
     await sendTokenRes(user, res, "User registered successfully.");
   } catch (error) {

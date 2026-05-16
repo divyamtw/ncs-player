@@ -1,0 +1,66 @@
+.welcome {
+  margin-bottom: 28px;
+  animation: fadeIn 0.3s ease;
+}
+.welcome h2 {
+  font-size: 24px; font-weight: 700;
+  letter-spacing: -0.03em; margin-bottom: 4px;
+}
+.welcome p { color: var(--text-muted); font-size: 14px; }
+
+.quickGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+  animation: fadeIn 0.35s ease;
+}
+
+.quickCard {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 20px 20px;
+  text-decoration: none;
+  color: inherit;
+  transition: all 0.18s ease;
+}
+.quickCard:hover {
+  border-color: var(--border-h);
+  background: var(--surface-h);
+  transform: translateY(-2px);
+}
+
+.quickIcon {
+  width: 48px; height: 48px;
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px;
+  flex-shrink: 0;
+}
+
+.quickText { flex: 1; }
+.quickLabel { font-size: 14px; font-weight: 600; margin-bottom: 3px; }
+.quickDesc { font-size: 12px; color: var(--text-muted); }
+
+.quickArrow { color: var(--text-dim); flex-shrink: 0; transition: transform 0.15s; }
+.quickCard:hover .quickArrow { transform: translateX(3px); color: var(--text-muted); }
+
+.infoCard {
+  display: flex;
+  gap: 16px;
+  background: var(--primary-bg);
+  border: 1px solid rgba(99,102,241,0.3);
+  border-radius: var(--radius-lg);
+  padding: 20px 24px;
+  animation: fadeIn 0.4s ease;
+}
+
+.infoIcon { flex-shrink: 0; margin-top: 2px; }
+
+.infoTitle { font-size: 14px; font-weight: 700; color: var(--primary-lt); margin-bottom: 6px; }
+.infoText { font-size: 13px; color: var(--text-muted); line-height: 1.6; }
+.infoText strong { color: var(--text); }
