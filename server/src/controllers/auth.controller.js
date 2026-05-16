@@ -8,7 +8,12 @@ import config from "../config/config.js";
  */
 const sendTokenRes = (user, res, msg) => {
   const token = generateAccessToken(user._id);
-  res.cookie("accessToken", token);
+  res.cookie("accessToken", token, {
+    httpOnly: true,
+    sameSite: "lax",
+    secure: false, // set to true in production with HTTPS
+    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+  });
   return res.status(200).json({
     success: true,
     message: msg,
@@ -114,7 +119,6 @@ const getUserController = async (req, res) => {
       .status(200)
       .json({ message: "User fetched successfully.", success: true, user });
   } catch (error) {
-    console.log(error);
     return res.status(500).json({
       message: "Something went wrong while fetching user.",
       success: false,

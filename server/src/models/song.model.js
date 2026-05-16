@@ -61,10 +61,9 @@ const songSchema = new Schema(
       ref: "User",
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
-songSchema.index({ trackId: 1 }, { unique: true });
 songSchema.index({ title: "text", artist: "text" });
 
 const Song = model("Song", songSchema);

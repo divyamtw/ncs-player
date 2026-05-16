@@ -8,12 +8,8 @@ const app = express();
 
 app.use(
   cors({
-    origin: [
-      config.CLIENT_URL,
-      "http://localhost:5173",
-      "http://localhost:5174",
-    ].filter(Boolean),
-    methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
+    origin: config.CLIENT_URL,
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
     credentials: true,
   }),
 );
@@ -21,7 +17,6 @@ app.use(morgan("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
-
 
 app.get("/", (req, res) => {
   res.send("Hello, Dev!");
